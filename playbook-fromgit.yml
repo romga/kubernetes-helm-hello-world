@@ -1,0 +1,21 @@
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Git clone stable repo on HEAD
+      ansible.builtin.git:
+        repo: "https://github.com/pablorsk/kubernetes-helm-hello-world.git"
+        dest: /tmp/helm_repo
+    - name: replace in deployment file
+      shell: sed -i.bu 's/extensions\/v1beta1/apps\/v1/g' /tmp/helm_repo/helloworld-chart/templates/deployment.yaml
+    - name: installing hello-world playbook
+      community.kubernetes.helm:
+        name: hello-world
+        chart_ref: /tmp/helm_repo/helloworld-chart
+        release_namespace: hello-world
+        create_namespace: true
+        state: present
+        values_files:
+          - values.yaml
+    - name: cleanup
+      shell: rm -rf /tmp/helm_repo/helloworld-chart/templates/deployment.yaml

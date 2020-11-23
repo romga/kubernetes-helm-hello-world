@@ -1,0 +1,13 @@
+- hosts: localhost
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: installing hello-world playbook
+      community.kubernetes.helm:
+        name: hello-world
+        chart_ref: ./helloworld-chart
+        release_namespace: hello-world
+        create_namespace: true
+        state: present
+        values_files:
+          - values.yaml
