@@ -1,0 +1,31 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: scale-up
+spec:
+
+  schedule: "{{ .Values.cron }}"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: scale-up
+          containers:
+          - name: scale-up
+            image: python:3.7
+            env:
+              - name: REPLICAS
+                value: "{{ .Values.cronscale }}"
+              - name: NAMESPACE
+                value: "{{ .Values.namespace }}"
+              - name: CHART
+                value: {{ template "helloworld-chart.fullname" . }}
+            command:
+            - /bin/bash
+            - -cx
+            - |
+              curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.16.13/bin/linux/amd64/kubectl
+              chmod +x kubectl
+              ./kubectl -n $NAMESPACE scale deployment $CHART --replicas=$REPLICAS
+              ./kubectl -n $NAMESPACE get deployments
+          restartPolicy: OnFailure

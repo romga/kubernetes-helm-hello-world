@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: scale-up
+
+rules:
+- apiGroups: ["apps"]
+  resources:
+  - "deployments"
+  - "deployments/scale"
+  verbs: [ "get", "update", "list", "watch","patch"]
+
+

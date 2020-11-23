@@ -1,0 +1,21 @@
+templates:
+  default: &default
+    namespace: hello-world
+    missingFileHandler: Warn
+    values:
+    - values.yaml
+
+
+helmDefaults:
+  wait: true
+  timeout: 600
+
+
+environments:
+  sndbx:
+releases:
+- <<: *default
+  name: hello-world
+  chart: ./helloworld-chart
+
+
